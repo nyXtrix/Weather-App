@@ -1,32 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
-export type WeatherData = {
-  current_weather: {
-    temperature: number;
-    windspeed: number;
-    winddirection: number;
-    humidity: number;
-    weathercode: number;
-    time: string;
-  };
-  daily: {
-    time: string[];
-    temperature_max: number[];
-    temperature_min: number[];
-    weathercode: number[];
-    sunrise: string[];
-    sunset: string[];
-    humidity: number[];
-    winddirection: number[];
-  };
-  hourly: {
-    time: string[];
-    temperature: number[];
-    precipitation_probability: number[];
-    relative_humidity: number[];
-    winddirection: number[];
-  };
-};
+import type { WeatherData } from "../types/types";
 
 type WeatherState = {
   details: WeatherData | null;
@@ -38,12 +11,14 @@ const initialState: WeatherState = {
   error: null,
 };
 
+const DETAILS_URL = import.meta.env.VITE_OPEN_METEO_API_URL;
+
 export const weather = createAsyncThunk<
   WeatherData,
   { latitude: number; longitude: number }
 >("weather/fetchWeather", async ({ latitude, longitude }) => {
   const response = await fetch(
-    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,windspeed_10m,winddirection_10m&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,relative_humidity_2m_mean,winddirection_10m_dominant&timezone=auto`
+    `${DETAILS_URL}?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,windspeed_10m,winddirection_10m&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,relative_humidity_2m_mean,winddirection_10m_dominant&timezone=auto`
   );
 
   const data = await response.json();
